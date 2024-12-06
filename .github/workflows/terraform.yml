@@ -1,0 +1,59 @@
+name: Deploy Terraform
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        types:
+        - open
+        - closed
+
+env:
+    AWS_REGION: us-east-1
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v1
+              with:
+                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws-region: ${{ env.AWS_REGION }}
+
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v2
+              with:
+                terraform_version: 1.5.0
+
+            - name: Terraform Init
+              run: terraform init
+
+            - name: Terraform Format
+              run: terraform fmt
+
+            - name: Terraform Validate
+              run: terraform validate
+            
+            - name: Run tfsec
+              uses: aquasecurity/tfsec-action@v1.0.0
+              with:
+                soft_fail: true
+
+            - name: Terraform Plan
+              if: github.event_name == 'pull_request'
+              run: terraform plan
+
+            - name: Terraform Apply
+              if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+              run: terraform apply
+              env:
+                TF_WORKSPACE: default
+
+            
+            
+           
