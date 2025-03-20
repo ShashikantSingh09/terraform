@@ -11,13 +11,13 @@ variable "app_count" {
 variable "ecs_task_role_arn" {
   description = "ARN of the ECS Task Role"
   type        = string
-  default     = "arn:aws:iam::851725311521:role/ecsTaskExecutionRole"
+  default     = "arn:aws:iam::730335229139:role/ecsTaskExecutionRole"
 }
 
 variable "ecs_execution_role_arn" {
   description = "ARN of the ECS Execution Role"
   type        = string
-  default     = "arn:aws:iam::851725311521:role/ecsTaskExecutionRole"
+  default     = "arn:aws:iam::730335229139:role/ecsTaskExecutionRole"
 }
 
 variable "ecs_log_driver_options" {
